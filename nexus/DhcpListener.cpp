@@ -42,7 +42,7 @@ bool DhcpListener::onDataAvailable(SocketClient *cli) {
     int rc;
 
     if ((rc = read(cli->getSocket(), buffer, sizeof(buffer))) < 0) {
-        ALOGW("Error reading dhcp status msg (%s)", strerror(errno));
+        LOGW("Error reading dhcp status msg (%s)", strerror(errno));
         return true;
     }
 
@@ -53,7 +53,7 @@ bool DhcpListener::onDataAvailable(SocketClient *cli) {
 
         for (i = 0; i < 2; i++) {
             if (!(tmp = strsep(&next, ":"))) {
-                ALOGW("Error parsing state '%s'", buffer);
+                LOGW("Error parsing state '%s'", buffer);
                 return true;
             }
         }
@@ -65,22 +65,22 @@ bool DhcpListener::onDataAvailable(SocketClient *cli) {
 	struct in_addr ipaddr, netmask, gateway, broadcast, dns1, dns2;
 
         if (!inet_aton(strsep(&next, ":"), &ipaddr)) {
-            ALOGW("Malformatted IP specified");
+            LOGW("Malformatted IP specified");
         }
         if (!inet_aton(strsep(&next, ":"), &netmask)) {
-            ALOGW("Malformatted netmask specified");
+            LOGW("Malformatted netmask specified");
         }
         if (!inet_aton(strsep(&next, ":"), &broadcast)) {
-            ALOGW("Malformatted broadcast specified");
+            LOGW("Malformatted broadcast specified");
         }
         if (!inet_aton(strsep(&next, ":"), &gateway)) {
-            ALOGW("Malformatted gateway specified");
+            LOGW("Malformatted gateway specified");
         }
         if (!inet_aton(strsep(&next, ":"), &dns1)) {
-            ALOGW("Malformatted dns1 specified");
+            LOGW("Malformatted dns1 specified");
         }
         if (!inet_aton(strsep(&next, ":"), &dns2)) {
-            ALOGW("Malformatted dns2 specified");
+            LOGW("Malformatted dns2 specified");
         }
         mHandlers->onDhcpLeaseUpdated(mController, &ipaddr, &netmask,
                                       &broadcast, &gateway, &dns1, &dns2);
@@ -92,7 +92,7 @@ bool DhcpListener::onDataAvailable(SocketClient *cli) {
 
         for (i = 0; i < 2; i++) {
             if (!(tmp = strsep(&next, ":"))) {
-                ALOGW("Error parsing event '%s'", buffer);
+                LOGW("Error parsing event '%s'", buffer);
                 return true;
             }
         }
@@ -101,7 +101,7 @@ bool DhcpListener::onDataAvailable(SocketClient *cli) {
         mHandlers->onDhcpEvent(mController, ev);
   
     } else {
-        ALOGW("Unknown DHCP monitor msg '%s'", buffer);
+        LOGW("Unknown DHCP monitor msg '%s'", buffer);
     }
 
     return true;

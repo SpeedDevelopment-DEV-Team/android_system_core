@@ -50,13 +50,13 @@ int WifiStatusPoller::stop() {
     char c = 0;
 
     if (write(mCtrlPipe[1], &c, 1) != 1) {
-        ALOGE("Error writing to control pipe (%s)", strerror(errno));
+        LOGE("Error writing to control pipe (%s)", strerror(errno));
         return -1;
     }
 
     void *ret;
     if (pthread_join(mThread, &ret)) {
-        ALOGE("Error joining to listener thread (%s)", strerror(errno));
+        LOGE("Error joining to listener thread (%s)", strerror(errno));
         return -1;
     }
     close(mCtrlPipe[0]);
@@ -68,10 +68,10 @@ void *WifiStatusPoller::threadStart(void *obj) {
     WifiStatusPoller *me = reinterpret_cast<WifiStatusPoller *>(obj);
 
     me->mStarted = true;
-    ALOGD("Starting");
+    LOGD("Starting");
     me->run();
     me->mStarted = false;
-    ALOGD("Stopping");
+    LOGD("Stopping");
     pthread_exit(NULL);
     return NULL;
 }
@@ -92,7 +92,7 @@ void WifiStatusPoller::run() {
         max = mCtrlPipe[0];
 
         if ((rc = select(max + 1, &read_fds, NULL, NULL, &to)) < 0) {
-            ALOGE("select failed (%s)", strerror(errno));
+            LOGE("select failed (%s)", strerror(errno));
             sleep(1);
             continue;
         } else if (!rc) {

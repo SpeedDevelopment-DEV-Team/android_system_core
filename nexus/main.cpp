@@ -28,13 +28,13 @@
 #include "TiwlanWifiController.h"
 
 int main() {
-    ALOGI("Nexus version 0.1 firing up");
+    LOGI("Nexus version 0.1 firing up");
 
     CommandListener *cl = new CommandListener();
 
     NetworkManager *nm;
     if (!(nm = NetworkManager::Instance())) {
-        ALOGE("Unable to create NetworkManager");
+        LOGE("Unable to create NetworkManager");
         exit (-1);
     };
 
@@ -47,12 +47,12 @@ int main() {
 
 
     if (NetworkManager::Instance()->run()) {
-        ALOGE("Unable to Run NetworkManager (%s)", strerror(errno));
+        LOGE("Unable to Run NetworkManager (%s)", strerror(errno));
         exit (1);
     }
 
     if (cl->startListener()) {
-        ALOGE("Unable to start CommandListener (%s)", strerror(errno));
+        LOGE("Unable to start CommandListener (%s)", strerror(errno));
         exit (1);
     }
 
@@ -62,6 +62,6 @@ int main() {
         sleep(1000);
     }
 
-    ALOGI("Nexus exiting");
+    LOGI("Nexus exiting");
     exit(0);
 }

@@ -40,20 +40,20 @@ write_raw_image(const char *dst, const char *src, loff_t offset, int test)
     int done = 0;
     uint64_t total = 0;
 
-    ALOGI("Writing RAW image '%s' to '%s' (offset=%llu)", src, dst, offset);
+    LOGI("Writing RAW image '%s' to '%s' (offset=%llu)", src, dst, offset);
     if ((src_fd = open(src, O_RDONLY)) < 0) {
-        ALOGE("Could not open %s for reading (errno=%d).", src, errno);
+        LOGE("Could not open %s for reading (errno=%d).", src, errno);
         goto fail;
     }
 
     if (!test) {
         if ((dst_fd = open(dst, O_RDWR)) < 0) {
-            ALOGE("Could not open '%s' for read/write (errno=%d).", dst, errno);
+            LOGE("Could not open '%s' for read/write (errno=%d).", dst, errno);
             goto fail;
         }
 
         if (lseek64(dst_fd, offset, SEEK_SET) != offset) {
-            ALOGE("Could not seek to offset %lld in %s.", offset, dst);
+            LOGE("Could not seek to offset %lld in %s.", offset, dst);
             goto fail;
         }
     }
@@ -63,7 +63,7 @@ write_raw_image(const char *dst, const char *src, loff_t offset, int test)
             /* XXX: Should we not even bother with EINTR? */
             if (errno == EINTR)
                 continue;
-            ALOGE("Error (%d) while reading from '%s'", errno, src);
+            LOGE("Error (%d) while reading from '%s'", errno, src);
             goto fail;
         }
 
@@ -84,7 +84,7 @@ write_raw_image(const char *dst, const char *src, loff_t offset, int test)
                 /* XXX: Should we not even bother with EINTR? */
                 if (errno == EINTR)
                     continue;
-                ALOGE("Error (%d) while writing to '%s'", errno, dst);
+                LOGE("Error (%d) while writing to '%s'", errno, dst);
                 goto fail;
             }
             if (!tmp)
@@ -94,14 +94,14 @@ write_raw_image(const char *dst, const char *src, loff_t offset, int test)
     }
 
     if (!done) {
-        ALOGE("Exited read/write loop without setting flag! WTF?!");
+        LOGE("Exited read/write loop without setting flag! WTF?!");
         goto fail;
     }
 
     if (dst_fd >= 0)
         fsync(dst_fd);
 
-    ALOGI("Wrote %llu bytes to %s @ %lld", total, dst, offset);
+    LOGI("Wrote %llu bytes to %s @ %lld", total, dst, offset);
 
     close(src_fd);
     if (dst_fd >= 0)

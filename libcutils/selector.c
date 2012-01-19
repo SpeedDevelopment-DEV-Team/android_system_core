@@ -48,7 +48,7 @@ static void eatWakeupData(SelectableFd* wakeupFd) {
     static char garbage[64];
     if (read(wakeupFd->fd, garbage, sizeof(garbage)) < 0) {
         if (errno == EINTR) {
-            ALOGI("read() interrupted.");    
+            LOGI("read() interrupted.");    
         } else {
             LOG_ALWAYS_FATAL("This should never happen: %s", strerror(errno));
         }
@@ -77,7 +77,7 @@ void selectorWakeUp(Selector* selector) {
     static char garbage[1];
     if (write(selector->wakeupPipe[1], garbage, sizeof(garbage)) < 0) {
         if (errno == EINTR) {
-            ALOGI("read() interrupted.");    
+            LOGI("read() interrupted.");    
         } else {
             LOG_ALWAYS_FATAL("This should never happen: %s", strerror(errno));
         }
@@ -96,7 +96,7 @@ Selector* selectorCreate(void) {
         LOG_ALWAYS_FATAL("pipe() error: %s", strerror(errno));
     }
     
-    ALOGD("Wakeup fd: %d", selector->wakeupPipe[0]);
+    LOGD("Wakeup fd: %d", selector->wakeupPipe[0]);
     
     SelectableFd* wakeupFd = selectorAdd(selector, selector->wakeupPipe[0]);
     if (wakeupFd == NULL) {
@@ -169,11 +169,11 @@ static void prepareForSelect(Selector* selector) {
             
             bool inSet = false;
             if (maybeAdd(selectableFd, selectableFd->onExcept, exceptFds)) {
-                ALOGD("Selecting fd %d for writing...", selectableFd->fd);
+            	LOGD("Selecting fd %d for writing...", selectableFd->fd);
                 inSet = true;
             }
             if (maybeAdd(selectableFd, selectableFd->onReadable, readFds)) {
-                ALOGD("Selecting fd %d for reading...", selectableFd->fd);
+            	LOGD("Selecting fd %d for reading...", selectableFd->fd);
                 inSet = true;
             }
             if (maybeAdd(selectableFd, selectableFd->onWritable, writeFds)) {
@@ -200,9 +200,9 @@ static void prepareForSelect(Selector* selector) {
  */
 static inline void maybeInvoke(SelectableFd* selectableFd,
         void (*callback)(SelectableFd*), fd_set* fdSet) {
-    if (callback != NULL && !selectableFd->remove && 
+	if (callback != NULL && !selectableFd->remove && 
             FD_ISSET(selectableFd->fd, fdSet)) {
-        ALOGD("Selected fd %d.", selectableFd->fd);
+		LOGD("Selected fd %d.", selectableFd->fd);
         callback(selectableFd);
     }
 }
@@ -238,20 +238,20 @@ void selectorLoop(Selector* selector) {
         
         prepareForSelect(selector);
 
-        ALOGD("Entering select().");
+        LOGD("Entering select().");
         
         // Select file descriptors.
         int result = select(selector->maxFd + 1, &selector->readFds, 
                 &selector->writeFds, &selector->exceptFds, NULL);
         
-        ALOGD("Exiting select().");
+        LOGD("Exiting select().");
         
         setInSelect(selector, false);
         
         if (result == -1) {
             // Abort on everything except EINTR.
             if (errno == EINTR) {
-                ALOGI("select() interrupted.");    
+                LOGI("select() interrupted.");    
             } else {
                 LOG_ALWAYS_FATAL("select() error: %s", 
                         strerror(errno));

@@ -31,8 +31,8 @@
 #else
 #include <stdio.h>
 #include <string.h>
-#define ALOGD printf
-#define ALOGW printf
+#define LOGD printf
+#define LOGW printf
 #endif
 
 #include "dhcpmsg.h"
@@ -179,23 +179,23 @@ int receive_packet(int s, struct dhcp_msg *msg)
     is_valid = 0;
     if (nread < (int)(sizeof(struct iphdr) + sizeof(struct udphdr))) {
 #if VERBOSE
-        ALOGD("Packet is too small (%d) to be a UDP datagram", nread);
+        LOGD("Packet is too small (%d) to be a UDP datagram", nread);
 #endif
     } else if (packet.ip.version != IPVERSION || packet.ip.ihl != (sizeof(packet.ip) >> 2)) {
 #if VERBOSE
-        ALOGD("Not a valid IP packet");
+        LOGD("Not a valid IP packet");
 #endif
     } else if (nread < ntohs(packet.ip.tot_len)) {
 #if VERBOSE
-        ALOGD("Packet was truncated (read %d, needed %d)", nread, ntohs(packet.ip.tot_len));
+        LOGD("Packet was truncated (read %d, needed %d)", nread, ntohs(packet.ip.tot_len));
 #endif
     } else if (packet.ip.protocol != IPPROTO_UDP) {
 #if VERBOSE
-        ALOGD("IP protocol (%d) is not UDP", packet.ip.protocol);
+        LOGD("IP protocol (%d) is not UDP", packet.ip.protocol);
 #endif
     } else if (packet.udp.dest != htons(PORT_BOOTP_CLIENT)) {
 #if VERBOSE
-        ALOGD("UDP dest port (%d) is not DHCP client", ntohs(packet.udp.dest));
+        LOGD("UDP dest port (%d) is not DHCP client", ntohs(packet.udp.dest));
 #endif
     } else {
         is_valid = 1;
@@ -209,7 +209,7 @@ int receive_packet(int s, struct dhcp_msg *msg)
     /* validate IP header checksum */
     sum = finish_sum(checksum(&packet.ip, sizeof(packet.ip), 0));
     if (sum != 0) {
-        ALOGW("IP header checksum failure (0x%x)", packet.ip.check);
+        LOGW("IP header checksum failure (0x%x)", packet.ip.check);
         return -1;
     }
     /*
@@ -231,7 +231,7 @@ int receive_packet(int s, struct dhcp_msg *msg)
     sum = finish_sum(checksum(&packet, nread, 0));
     packet.udp.check = temp;
     if (temp != sum) {
-        ALOGW("UDP header checksum failure (0x%x should be 0x%x)", sum, temp);
+        LOGW("UDP header checksum failure (0x%x should be 0x%x)", sum, temp);
         return -1;
     }
     memcpy(msg, &packet.dhcp, dhcp_size);

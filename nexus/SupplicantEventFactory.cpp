@@ -57,9 +57,9 @@ SupplicantEvent *SupplicantEventFactory::createEvent(char *event, size_t len) {
             level = atoi(tmp);
             event += (match - event) + 1;
         } else
-            ALOGW("Unclosed level brace in event");
+            LOGW("Unclosed level brace in event");
     } else
-        ALOGW("No level specified in event");
+        LOGW("No level specified in event");
 
     /*
      * <N>CTRL-EVENT-XXX

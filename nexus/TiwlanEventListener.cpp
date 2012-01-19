@@ -33,25 +33,25 @@ bool TiwlanEventListener::onDataAvailable(SocketClient *cli) {
     struct ipc_ev_data *data;
 
     if (!(data = (struct ipc_ev_data *) malloc(sizeof(struct ipc_ev_data)))) {
-        ALOGE("Failed to allocate packet (out of memory)");
+        LOGE("Failed to allocate packet (out of memory)");
         return true;
     }
 
     if (recv(cli->getSocket(), data, sizeof(struct ipc_ev_data), 0) < 0) {
-       ALOGE("recv failed (%s)", strerror(errno));
+       LOGE("recv failed (%s)", strerror(errno));
        goto out;
     }
 
     if (data->event_type == IPC_EVENT_LINK_SPEED) {
         uint32_t *spd = (uint32_t *) data->buffer;
         *spd /= 2;
-//        ALOGD("Link speed = %u MB/s", *spd);
+//        LOGD("Link speed = %u MB/s", *spd);
     } else if (data->event_type == IPC_EVENT_LOW_SNR) {
-        ALOGW("Low signal/noise ratio");
+        LOGW("Low signal/noise ratio");
     } else if (data->event_type == IPC_EVENT_LOW_RSSI) {
-        ALOGW("Low RSSI");
+        LOGW("Low RSSI");
     } else {
-//        ALOGD("Dropping unhandled driver event %d", data->event_type);
+//        LOGD("Dropping unhandled driver event %d", data->event_type);
     }
 
     // TODO: Tell WifiController about the event

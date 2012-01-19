@@ -47,7 +47,7 @@ cfg_pentry(struct pc_partition *pentry, uint8_t status, uint8_t type,
     pentry->start_lba = start;
     pentry->len_lba = len;
 
-    ALOGI("Configuring pentry. status=0x%x type=0x%x start_lba=%u len_lba=%u",
+    LOGI("Configuring pentry. status=0x%x type=0x%x start_lba=%u len_lba=%u",
          pentry->status, pentry->type, pentry->start_lba, pentry->len_lba);
 }
 
@@ -62,7 +62,7 @@ kb_to_lba(uint32_t len_kb, uint32_t sect_size)
     lba = (lba + (uint64_t)sect_size - 1) & ~((uint64_t)sect_size - 1);
     lba /= (uint64_t)sect_size;
     if (lba >= 0xffffffffULL)
-        ALOGE("Error converting kb -> lba. 32bit overflow, expect weirdness");
+        LOGE("Error converting kb -> lba. 32bit overflow, expect weirdness");
     return (uint32_t)(lba & 0xffffffffULL);
 }
 
@@ -75,12 +75,12 @@ mk_pri_pentry(struct disk_info *dinfo, struct part_info *pinfo, int pnum,
     struct pc_partition *pentry;
 
     if (pnum >= PC_NUM_BOOT_RECORD_PARTS) {
-        ALOGE("Maximum number of primary partition exceeded.");
+        LOGE("Maximum number of primary partition exceeded.");
         return NULL;
     }
 
     if (!(item = alloc_wl(sizeof(struct pc_partition)))) {
-        ALOGE("Unable to allocate memory for partition entry.");
+        LOGE("Unable to allocate memory for partition entry.");
         return NULL;
     }
 
@@ -146,7 +146,7 @@ mk_ext_pentry(struct disk_info *dinfo, struct part_info *pinfo, uint32_t *lba,
     uint32_t len; /* in lba units */
 
     if (!(item = alloc_wl(sizeof(struct pc_boot_record)))) {
-        ALOGE("Unable to allocate memory for EBR.");
+        LOGE("Unable to allocate memory for EBR.");
         return NULL;
     }
 
@@ -163,7 +163,7 @@ mk_ext_pentry(struct disk_info *dinfo, struct part_info *pinfo, uint32_t *lba,
         len = kb_to_lba(pinfo->len_kb, dinfo->sect_size);
     else {
         if (pnext) {
-            ALOGE("Only the last partition can be specified to fill the disk "
+            LOGE("Only the last partition can be specified to fill the disk "
                  "(name = '%s')", pinfo->name);
             goto fail;
         }
@@ -233,7 +233,7 @@ config_mbr(struct disk_info *dinfo)
                 if ((temp_wr = mk_pri_pentry(dinfo, NULL, cnt, &cur_lba)))
                     wlist_add(&wr_list, temp_wr);
                 else {
-                    ALOGE("Cannot create primary extended partition.");
+                    LOGE("Cannot create primary extended partition.");
                     goto fail;
                 }
             }
@@ -259,7 +259,7 @@ config_mbr(struct disk_info *dinfo)
         if (temp_wr)
             wlist_add(&wr_list, temp_wr);
         else {
-            ALOGE("Cannot create partition %d (%s).", cnt, pinfo->name);
+            LOGE("Cannot create partition %d (%s).", cnt, pinfo->name);
             goto fail;
         }
     }
@@ -270,7 +270,7 @@ config_mbr(struct disk_info *dinfo)
         cur_lba = 0;
         memset(&blank, 0, sizeof(struct part_info));
         if (!(temp_wr = mk_pri_pentry(dinfo, &blank, cnt, &cur_lba))) {
-            ALOGE("Cannot create blank partition %d.", cnt);
+            LOGE("Cannot create blank partition %d.", cnt);
             goto fail;
         }
         wlist_add(&wr_list, temp_wr);
@@ -279,7 +279,7 @@ config_mbr(struct disk_info *dinfo)
     return wr_list;
 
 nospace:
-    ALOGE("Not enough space to add parttion '%s'.", pinfo->name);
+    LOGE("Not enough space to add parttion '%s'.", pinfo->name);
 
 fail:
     wlist_free(wr_list);
@@ -310,13 +310,13 @@ find_mbr_part(struct disk_info *dinfo, const char *name)
         num++;
 
     if (!(dev_name = malloc(MAX_NAME_LEN))) {
-        ALOGE("Cannot allocate memory.");
+        LOGE("Cannot allocate memory.");
         return NULL;
     }
 
     num = snprintf(dev_name, MAX_NAME_LEN, "%s%d", dinfo->device, num);
     if (num >= MAX_NAME_LEN) {
-        ALOGE("Device name is too long?!");
+        LOGE("Device name is too long?!");
         free(dev_name);
         return NULL;
     }

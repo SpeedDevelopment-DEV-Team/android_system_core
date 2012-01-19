@@ -213,12 +213,12 @@ int CommandListener::ListCmd::runCommand(SocketClient *cli, int argc, char **arg
         if (!NetworkManager::Instance()->getPropMngr()->get((*it),
                                                             p_v,
                                                             sizeof(p_v))) {
-            ALOGW("Failed to get %s (%s)", (*it), strerror(errno));
+            LOGW("Failed to get %s (%s)", (*it), strerror(errno));
         }
 
         char *buf;
         if (asprintf(&buf, "%s %s", (*it), p_v) < 0) {
-            ALOGE("Failed to allocate memory");
+            LOGE("Failed to allocate memory");
             free((*it));
             continue;
         }

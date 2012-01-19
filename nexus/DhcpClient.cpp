@@ -53,7 +53,7 @@ DhcpClient::~DhcpClient() {
 }
 
 int DhcpClient::start(Controller *c) {
-    ALOGD("Starting DHCP service (arp probe = %d)", mDoArpProbe);
+    LOGD("Starting DHCP service (arp probe = %d)", mDoArpProbe);
     char svc[PROPERTY_VALUE_MAX];
     snprintf(svc,
              sizeof(svc),
@@ -72,7 +72,7 @@ int DhcpClient::start(Controller *c) {
 
     sockaddr_in addr;
     if ((mListenerSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-        ALOGE("Failed to create DHCP listener socket");
+        LOGE("Failed to create DHCP listener socket");
         pthread_mutex_unlock(&mLock);
         return -1;
     }
@@ -82,7 +82,7 @@ int DhcpClient::start(Controller *c) {
     addr.sin_port = htons(DhcpClient::STATUS_MONITOR_PORT);
 
     if (bind(mListenerSocket, (struct sockaddr *) &addr, sizeof(addr))) {
-        ALOGE("Failed to bind DHCP listener socket");
+        LOGE("Failed to bind DHCP listener socket");
         close(mListenerSocket);
         mListenerSocket = -1;
         pthread_mutex_unlock(&mLock);
@@ -90,14 +90,14 @@ int DhcpClient::start(Controller *c) {
     }
 
     if (mServiceManager->start(svc)) {
-        ALOGE("Failed to start dhcp service");
+        LOGE("Failed to start dhcp service");
         pthread_mutex_unlock(&mLock);
         return -1;
     }
 
     mListener = new DhcpListener(mController, mListenerSocket, mHandlers);
     if (mListener->startListener()) {
-        ALOGE("Failed to start listener");
+        LOGE("Failed to start listener");
 #if 0
         mServiceManager->stop("dhcpcd");
         return -1;
@@ -126,7 +126,7 @@ int DhcpClient::stop() {
     close(mListenerSocket);
 
     if (mServiceManager->stop("dhcpcd")) {
-        ALOGW("Failed to stop DHCP service (%s)", strerror(errno));
+        LOGW("Failed to stop DHCP service (%s)", strerror(errno));
         // XXX: Kill it the hard way.. but its gotta go!
     }
 

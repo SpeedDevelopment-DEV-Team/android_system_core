@@ -42,9 +42,9 @@ SupplicantConnectedEvent::SupplicantConnectedEvent(int level, char *event,
             else
                 mReassociated = true;
         } else
-            ALOGE("Unable to decode re-assocation");
+            LOGE("Unable to decode re-assocation");
     } else
-        ALOGE("Unable to decode event");
+        LOGE("Unable to decode event");
 }
 
 SupplicantConnectedEvent::SupplicantConnectedEvent(const char *bssid, 

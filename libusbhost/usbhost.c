@@ -20,7 +20,7 @@
 #ifdef USE_LIBLOG
 #define LOG_TAG "usbhost"
 #include "utils/Log.h"
-#define D ALOGD
+#define D LOGD
 #else
 #define D printf
 #endif

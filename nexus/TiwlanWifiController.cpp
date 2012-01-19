@@ -75,23 +75,23 @@ int TiwlanWifiController::loadFirmware() {
     while (count-- > 0) {
         if (property_get(DRIVER_PROP_NAME, driver_status, NULL)) {
             if (!strcmp(driver_status, "ok")) {
-                ALOGD("Firmware loaded OK");
+                LOGD("Firmware loaded OK");
 
                 if (startDriverEventListener()) {
-                    ALOGW("Failed to start driver event listener (%s)",
+                    LOGW("Failed to start driver event listener (%s)",
                          strerror(errno));
                 }
 
                 return 0;
             } else if (!strcmp(DRIVER_PROP_NAME, "failed")) {
-                ALOGE("Firmware load failed");
+                LOGE("Firmware load failed");
                 return -1;
             }
         }
         usleep(200000);
     }
     property_set(DRIVER_PROP_NAME, "timeout");
-    ALOGE("Firmware load timed out");
+    LOGE("Firmware load timed out");
     return -1;
 }
 
@@ -99,13 +99,13 @@ int TiwlanWifiController::startDriverEventListener() {
     struct sockaddr_in addr;
 
     if (mListenerSock != -1) {
-        ALOGE("Listener already started!");
+        LOGE("Listener already started!");
         errno = EBUSY;
         return -1;
     }
 
     if ((mListenerSock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-        ALOGE("socket failed (%s)", strerror(errno));
+        LOGE("socket failed (%s)", strerror(errno));
         return -1;
     }
 
@@ -117,14 +117,14 @@ int TiwlanWifiController::startDriverEventListener() {
     if (bind(mListenerSock,
              (struct sockaddr *) &addr,
              sizeof(addr)) < 0) {
-        ALOGE("bind failed (%s)", strerror(errno));
+        LOGE("bind failed (%s)", strerror(errno));
         goto out_err;
     }
 
     mEventListener = new TiwlanEventListener(mListenerSock);
 
     if (mEventListener->startListener()) {
-        ALOGE("Error starting driver listener (%s)", strerror(errno));
+        LOGE("Error starting driver listener (%s)", strerror(errno));
         goto out_err;
     }
     return 0;

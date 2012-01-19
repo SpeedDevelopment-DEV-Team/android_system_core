@@ -74,7 +74,7 @@ ScanResult::ScanResult(char *rawResult) {
 
     return;
  out_bad:
-    ALOGW("Malformatted scan result (%s)", rawResult);
+    LOGW("Malformatted scan result (%s)", rawResult);
 }
 
 ScanResult::~ScanResult() {

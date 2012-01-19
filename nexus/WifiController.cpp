@@ -108,50 +108,50 @@ int WifiController::stop() {
 int WifiController::enable() {
 
     if (!isPoweredUp()) {
-        ALOGI("Powering up");
+        LOGI("Powering up");
         sendStatusBroadcast("Powering up WiFi hardware");
         if (powerUp()) {
-            ALOGE("Powerup failed (%s)", strerror(errno));
+            LOGE("Powerup failed (%s)", strerror(errno));
             return -1;
         }
     }
 
     if (mModuleName[0] != '\0' && !isKernelModuleLoaded(mModuleName)) {
-        ALOGI("Loading driver");
+        LOGI("Loading driver");
         sendStatusBroadcast("Loading WiFi driver");
         if (loadKernelModule(mModulePath, mModuleArgs)) {
-            ALOGE("Kernel module load failed (%s)", strerror(errno));
+            LOGE("Kernel module load failed (%s)", strerror(errno));
             goto out_powerdown;
         }
     }
 
     if (!isFirmwareLoaded()) {
-        ALOGI("Loading firmware");
+        LOGI("Loading firmware");
         sendStatusBroadcast("Loading WiFI firmware");
         if (loadFirmware()) {
-            ALOGE("Firmware load failed (%s)", strerror(errno));
+            LOGE("Firmware load failed (%s)", strerror(errno));
             goto out_powerdown;
         }
     }
 
     if (!mSupplicant->isStarted()) {
-        ALOGI("Starting WPA Supplicant");
+        LOGI("Starting WPA Supplicant");
         sendStatusBroadcast("Starting WPA Supplicant");
         if (mSupplicant->start()) {
-            ALOGE("Supplicant start failed (%s)", strerror(errno));
+            LOGE("Supplicant start failed (%s)", strerror(errno));
             goto out_unloadmodule;
         }
     }
 
     if (Controller::bindInterface(mSupplicant->getInterfaceName())) {
-        ALOGE("Error binding interface (%s)", strerror(errno));
+        LOGE("Error binding interface (%s)", strerror(errno));
         goto out_unloadmodule;
     }
 
     if (mSupplicant->refreshNetworkList())
-        ALOGW("Error getting list of networks (%s)", strerror(errno));
+        LOGW("Error getting list of networks (%s)", strerror(errno));
 
-    ALOGW("TODO: Set # of allowed regulatory channels!");
+    LOGW("TODO: Set # of allowed regulatory channels!");
 
     mPropMngr->attachProperty("wifi", mDynamicProperties.propSupplicantState);
     mPropMngr->attachProperty("wifi", mDynamicProperties.propActiveScan);
@@ -167,19 +167,19 @@ int WifiController::enable() {
     mPropMngr->attachProperty("wifi", mDynamicProperties.propNetCount);
     mPropMngr->attachProperty("wifi", mDynamicProperties.propTriggerScan);
 
-    ALOGI("Enabled successfully");
+    LOGI("Enabled successfully");
     return 0;
 
 out_unloadmodule:
     if (mModuleName[0] != '\0' && !isKernelModuleLoaded(mModuleName)) {
         if (unloadKernelModule(mModuleName)) {
-            ALOGE("Unable to unload module after failure!");
+            LOGE("Unable to unload module after failure!");
         }
     }
 
 out_powerdown:
     if (powerDown()) {
-        ALOGE("Unable to powerdown after failure!");
+        LOGE("Unable to powerdown after failure!");
     }
     return -1;
 }
@@ -195,7 +195,7 @@ int WifiController::setSuspend(bool suspend) {
 
     pthread_mutex_lock(&mLock);
     if (suspend == mSuspended) {
-        ALOGW("Suspended state already = %d", suspend);
+        LOGW("Suspended state already = %d", suspend);
         pthread_mutex_unlock(&mLock);
         return 0;
     }
@@ -204,29 +204,29 @@ int WifiController::setSuspend(bool suspend) {
         mHandlers->onControllerSuspending(this);
 
         char tmp[80];
-        ALOGD("Suspending from supplicant state %s",
+        LOGD("Suspending from supplicant state %s",
              SupplicantState::toString(mSupplicantState,
                                        tmp,
                                        sizeof(tmp)));
 
         if (mSupplicantState != SupplicantState::IDLE) {
-            ALOGD("Forcing Supplicant disconnect");
+            LOGD("Forcing Supplicant disconnect");
             if (mSupplicant->disconnect()) {
-                ALOGW("Error disconnecting (%s)", strerror(errno));
+                LOGW("Error disconnecting (%s)", strerror(errno));
             }
         }
 
-        ALOGD("Stopping Supplicant driver");
+        LOGD("Stopping Supplicant driver");
         if (mSupplicant->stopDriver()) {
-            ALOGE("Error stopping driver (%s)", strerror(errno));
+            LOGE("Error stopping driver (%s)", strerror(errno));
             pthread_mutex_unlock(&mLock);
             return -1;
         }
     } else {
-        ALOGD("Resuming");
+        LOGD("Resuming");
 
         if (mSupplicant->startDriver()) {
-            ALOGE("Error resuming driver (%s)", strerror(errno));
+            LOGE("Error resuming driver (%s)", strerror(errno));
             pthread_mutex_unlock(&mLock);
             return -1;
         }
@@ -241,7 +241,7 @@ int WifiController::setSuspend(bool suspend) {
 
     mSuspended = suspend;
     pthread_mutex_unlock(&mLock);
-    ALOGD("Suspend / Resume completed");
+    LOGD("Suspend / Resume completed");
     return 0;
 }
 
@@ -269,16 +269,16 @@ int WifiController::disable() {
     if (mSupplicant->isStarted()) {
         sendStatusBroadcast("Stopping WPA Supplicant");
         if (mSupplicant->stop()) {
-            ALOGE("Supplicant stop failed (%s)", strerror(errno));
+            LOGE("Supplicant stop failed (%s)", strerror(errno));
             return -1;
         }
     } else
-        ALOGW("disable(): Supplicant not running?");
+        LOGW("disable(): Supplicant not running?");
 
     if (mModuleName[0] != '\0' && isKernelModuleLoaded(mModuleName)) {
         sendStatusBroadcast("Unloading WiFi driver");
         if (unloadKernelModule(mModuleName)) {
-            ALOGE("Unable to unload module (%s)", strerror(errno));
+            LOGE("Unable to unload module (%s)", strerror(errno));
             return -1;
         }
     }
@@ -286,7 +286,7 @@ int WifiController::disable() {
     if (isPoweredUp()) {
         sendStatusBroadcast("Powering down WiFi hardware");
         if (powerDown()) {
-            ALOGE("Powerdown failed (%s)", strerror(errno));
+            LOGE("Powerdown failed (%s)", strerror(errno));
             return -1;
         }
     }
@@ -426,38 +426,38 @@ int WifiController::setBluetoothCoexistenceMode(int mode) {
 }
 
 void WifiController::onAssociatingEvent(SupplicantAssociatingEvent *evt) {
-    ALOGD("onAssociatingEvent(%s, %s, %d)",
+    LOGD("onAssociatingEvent(%s, %s, %d)",
          (evt->getBssid() ? evt->getBssid() : "n/a"),
          (evt->getSsid() ? evt->getSsid() : "n/a"),
          evt->getFreq());
 }
 
 void WifiController::onAssociatedEvent(SupplicantAssociatedEvent *evt) {
-    ALOGD("onAssociatedEvent(%s)", evt->getBssid());
+    LOGD("onAssociatedEvent(%s)", evt->getBssid());
 }
 
 void WifiController::onConnectedEvent(SupplicantConnectedEvent *evt) {
-    ALOGD("onConnectedEvent(%s, %d)", evt->getBssid(), evt->getReassociated());
+    LOGD("onConnectedEvent(%s, %d)", evt->getBssid(), evt->getReassociated());
     SupplicantStatus *ss = mSupplicant->getStatus();
     WifiNetwork *wn;
 
     if (ss->getWpaState() != SupplicantState::COMPLETED) {
         char tmp[32];
 
-        ALOGW("onConnected() with SupplicantState = %s!",
+        LOGW("onConnected() with SupplicantState = %s!",
              SupplicantState::toString(ss->getWpaState(), tmp,
              sizeof(tmp)));
         return;
     }
 
     if (ss->getId() == -1) {
-        ALOGW("onConnected() with id = -1!");
+        LOGW("onConnected() with id = -1!");
         return;
     }
     
     mCurrentlyConnectedNetworkId = ss->getId();
     if (!(wn = mSupplicant->lookupNetwork(ss->getId()))) {
-        ALOGW("Error looking up connected network id %d (%s)",
+        LOGW("Error looking up connected network id %d (%s)",
              ss->getId(), strerror(errno));
         return;
     }
@@ -470,7 +470,7 @@ void WifiController::onScanResultsEvent(SupplicantScanResultsEvent *evt) {
     char *reply;
 
     if (!(reply = (char *) malloc(4096))) {
-        ALOGE("Out of memory");
+        LOGE("Out of memory");
         return;
     }
 
@@ -481,7 +481,7 @@ void WifiController::onScanResultsEvent(SupplicantScanResultsEvent *evt) {
     size_t len = 4096;
 
     if (mSupplicant->sendCommand("SCAN_RESULTS", reply, &len)) {
-        ALOGW("onScanResultsEvent: Error getting scan results (%s)",
+        LOGW("onScanResultsEvent: Error getting scan results (%s)",
              strerror(errno));
         free(reply);
         return;
@@ -530,7 +530,7 @@ void WifiController::onStateChangeEvent(SupplicantStateChangeEvent *evt) {
     if (evt->getState() == mSupplicantState)
         return;
 
-    ALOGD("onStateChangeEvent(%s -> %s)",
+    LOGD("onStateChangeEvent(%s -> %s)", 
          SupplicantState::toString(mSupplicantState, tmp, sizeof(tmp)),
          SupplicantState::toString(evt->getState(), tmp2, sizeof(tmp2)));
 
@@ -559,7 +559,7 @@ void WifiController::onStateChangeEvent(SupplicantStateChangeEvent *evt) {
 }
 
 void WifiController::onConnectionTimeoutEvent(SupplicantConnectionTimeoutEvent *evt) {
-    ALOGD("onConnectionTimeoutEvent(%s)", evt->getBssid());
+    LOGD("onConnectionTimeoutEvent(%s)", evt->getBssid());
 }
 
 void WifiController::onDisconnectedEvent(SupplicantDisconnectedEvent *evt) {
@@ -569,39 +569,39 @@ void WifiController::onDisconnectedEvent(SupplicantDisconnectedEvent *evt) {
 
 #if 0
 void WifiController::onTerminatingEvent(SupplicantEvent *evt) {
-    ALOGD("onTerminatingEvent(%s)", evt->getEvent());
+    LOGD("onTerminatingEvent(%s)", evt->getEvent());
 }
 
 void WifiController::onPasswordChangedEvent(SupplicantEvent *evt) {
-    ALOGD("onPasswordChangedEvent(%s)", evt->getEvent());
+    LOGD("onPasswordChangedEvent(%s)", evt->getEvent());
 }
 
 void WifiController::onEapNotificationEvent(SupplicantEvent *evt) {
-    ALOGD("onEapNotificationEvent(%s)", evt->getEvent());
+    LOGD("onEapNotificationEvent(%s)", evt->getEvent());
 }
 
 void WifiController::onEapStartedEvent(SupplicantEvent *evt) {
-    ALOGD("onEapStartedEvent(%s)", evt->getEvent());
+    LOGD("onEapStartedEvent(%s)", evt->getEvent());
 }
 
 void WifiController::onEapMethodEvent(SupplicantEvent *evt) {
-    ALOGD("onEapMethodEvent(%s)", evt->getEvent());
+    LOGD("onEapMethodEvent(%s)", evt->getEvent());
 }
 
 void WifiController::onEapSuccessEvent(SupplicantEvent *evt) {
-    ALOGD("onEapSuccessEvent(%s)", evt->getEvent());
+    LOGD("onEapSuccessEvent(%s)", evt->getEvent());
 }
 
 void WifiController::onEapFailureEvent(SupplicantEvent *evt) {
-    ALOGD("onEapFailureEvent(%s)", evt->getEvent());
+    LOGD("onEapFailureEvent(%s)", evt->getEvent());
 }
 
 void WifiController::onLinkSpeedEvent(SupplicantEvent *evt) {
-    ALOGD("onLinkSpeedEvent(%s)", evt->getEvent());
+    LOGD("onLinkSpeedEvent(%s)", evt->getEvent());
 }
 
 void WifiController::onDriverStateEvent(SupplicantEvent *evt) {
-    ALOGD("onDriverStateEvent(%s)", evt->getEvent());
+    LOGD("onDriverStateEvent(%s)", evt->getEvent());
 }
 #endif
 
@@ -609,7 +609,7 @@ void WifiController::onStatusPollInterval() {
     pthread_mutex_lock(&mLock);
     int rssi;
     if (mSupplicant->getRssi(&rssi)) {
-        ALOGE("Failed to get rssi (%s)", strerror(errno));
+        LOGE("Failed to get rssi (%s)", strerror(errno));
         pthread_mutex_unlock(&mLock);
         return;
     }

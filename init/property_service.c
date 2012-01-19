@@ -505,14 +505,11 @@ static void load_persistent_properties()
     persistent_properties_loaded = 1;
 }
 
-void property_init(void)
+void property_init(bool load_defaults)
 {
     init_property_area();
-}
-
-void property_load_boot_defaults(void)
-{
-    load_properties_from_file(PROP_PATH_RAMDISK_DEFAULT);
+    if (load_defaults)
+        load_properties_from_file(PROP_PATH_RAMDISK_DEFAULT);
 }
 
 int properties_inited(void)
