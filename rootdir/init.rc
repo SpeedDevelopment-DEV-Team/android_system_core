@@ -63,7 +63,6 @@ loglevel 3
 
     # Sysctl kernel tweaks
     write /proc/cpu/alignment 4
-    write /proc/sys/kernel/panic 0
     write /proc/sys/kernel/msgmni 2048
     write /proc/sys/kernel/shmmni 4096
     write /proc/sys/kernel/msgmax 64000
@@ -71,7 +70,7 @@ loglevel 3
     write /proc/sys/kernel/panic_on_oops 1
     write /proc/sys/kernel/shmmax 268435456
     write /proc/sys/kernel/threads-max 5000
-    write /proc/sys/kernel/sched_features 24189
+    write /proc/sys/kernel/sched_features 24188
     write /proc/sys/kernel/sched_compat_yield 1
     write /proc/sys/kernel/randomize_va_space 2
     write /proc/sys/kernel/sem 500 512000 64 2048
@@ -219,6 +218,8 @@ on boot
 # Memory management.  Basic kernel parameters, and allow the high
 # level system server to be able to adjust the kernel OOM driver
 # paramters to match how it is managing things.
+    write /proc/sys/vm/overcommit_memory 1
+    write /proc/sys/vm/min_free_order_shift 4
     chown root system /sys/module/lowmemorykiller/parameters/adj
     chmod 0664 /sys/module/lowmemorykiller/parameters/adj
     chown root system /sys/module/lowmemorykiller/parameters/minfree
@@ -233,10 +234,8 @@ on boot
     # Virtual background tweaks
     write /proc/sys/vm/swappiness 0
     write /proc/sys/vm/dirty_ratio 90
-    write /proc/sys/vm/overcommit_memory 1
     write /proc/sys/vm/min_free_kbytes 8192
     write /proc/sys/vm/vfs_cache_pressure 25
-    write /proc/sys/vm/min_free_order_shift 4
     write /proc/sys/vm/dirty_background_ratio 70
     write /proc/sys/vm/dirty_expire_centisecs 3000
     write /proc/sys/vm/dirty_writeback_centisecs 6000
