@@ -66,23 +66,23 @@ loglevel 3
 
     # Sysctl kernel tweaks
     write /proc/cpu/alignment 4
-    write /proc/sys/kernel/msgmni 4096
-    write /proc/sys/kernel/shmmni 8192
-    write /proc/sys/kernel/msgmax 128000
-    write /proc/sys/kernel/shmall 4107284
+    write /proc/sys/kernel/msgmni 2048
+    write /proc/sys/kernel/shmmni 4096
+    write /proc/sys/kernel/msgmax 64000
+    write /proc/sys/kernel/shmall 2097152
     write /proc/sys/kernel/panic_on_oops 1
-    write /proc/sys/kernel/shmmax 524735485
-    write /proc/sys/kernel/threads-max 10000
-    write /proc/sys/kernel/sched_features 48264
+    write /proc/sys/kernel/shmmax 268435456
+    write /proc/sys/kernel/threads-max 5000
+    write /proc/sys/kernel/sched_features 24192
     write /proc/sys/kernel/sched_compat_yield 1
     write /proc/sys/kernel/randomize_va_space 2
-    write /proc/sys/kernel/sem 1000 1024000 64 4096
+    write /proc/sys/kernel/sem 500 512000 64 2048
     write /proc/sys/kernel/hung_task_timeout_secs 0
     write /proc/sys/kernel/sched_child_runs_first 0
-    write /proc/sys/kernel/sched_latency_ns 40960000
-    write /proc/sys/kernel/sched_shares_ratelimit 2048000
-    write /proc/sys/kernel/sched_min_granularity_ns 3200000
-    write /proc/sys/kernel/sched_wakeup_granularity_ns 6400000
+    write /proc/sys/kernel/sched_latency_ns 18000000
+    write /proc/sys/kernel/sched_shares_ratelimit 256000
+    write /proc/sys/kernel/sched_min_granularity_ns 1500000
+    write /proc/sys/kernel/sched_wakeup_granularity_ns 3000000
 
 # Create cgroup mount points for process groups
     mkdir /dev/cpuctl
@@ -209,9 +209,6 @@ on post-fs-data
     chown system system /sys/class/android_usb/android0/f_rndis/ethaddr
     chmod 0660 /sys/class/android_usb/android0/f_rndis/ethaddr
 
-# Include extra init file
-    import /system/etc/init.local.rc
-
 on boot
 # basic network init
     ifup lo
@@ -235,16 +232,16 @@ on boot
     # Note that the driver only supports 6 slots, so we have combined some of
     # the classes into the same memory level; the associated processes of higher
     # classes will still be killed first.
-    write /sys/module/lowmemorykiller/parameters/minfree 8194,10248,21024,21048,21064,26752
+    write /sys/module/lowmemorykiller/parameters/minfree 8192,10248,20992,20994,20996,25648
 
     # Virtual background tweaks
-    write /proc/sys/vm/swappiness 1
-    write /proc/sys/vm/dirty_ratio 92
-    write /proc/sys/vm/min_free_kbytes 8194
-    write /proc/sys/vm/vfs_cache_pressure 28
-    write /proc/sys/vm/dirty_background_ratio 72
-    write /proc/sys/vm/dirty_expire_centisecs 3064
-    write /proc/sys/vm/dirty_writeback_centisecs 6128
+    write /proc/sys/vm/swappiness 0
+    write /proc/sys/vm/dirty_ratio 90
+    write /proc/sys/vm/min_free_kbytes 8192
+    write /proc/sys/vm/vfs_cache_pressure 25
+    write /proc/sys/vm/dirty_background_ratio 70
+    write /proc/sys/vm/dirty_expire_centisecs 3000
+    write /proc/sys/vm/dirty_writeback_centisecs 6000
 
     # Permissions for System Server and daemons.
     chown radio system /sys/android_power/state
@@ -478,12 +475,6 @@ service drm /system/bin/drmserver
     class main
     user drm
     group system inet drmrpc
-
-service userinit /system/xbin/busybox run-parts /system/etc/init.d
-    oneshot
-    class late_start
-    user root
-    group root
 
 service media /system/bin/mediaserver
     class main
