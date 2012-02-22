@@ -232,14 +232,14 @@ on boot
     # Note that the driver only supports 6 slots, so we have combined some of
     # the classes into the same memory level; the associated processes of higher
     # classes will still be killed first.
-    write /sys/module/lowmemorykiller/parameters/minfree 8192,10248,20992,20994,20996,25648
+    write /sys/module/lowmemorykiller/parameters/minfree 2560,3840,6400,12800,12800,25600
 
     # Virtual background tweaks
     write /proc/sys/vm/swappiness 0
     write /proc/sys/vm/dirty_ratio 90
     write /proc/sys/vm/min_free_kbytes 8192
     write /proc/sys/vm/vfs_cache_pressure 25
-    write /proc/sys/vm/dirty_background_ratio 70
+    write /proc/sys/vm/dirty_background_ratio 65
     write /proc/sys/vm/dirty_expire_centisecs 3000
     write /proc/sys/vm/dirty_writeback_centisecs 6000
 
