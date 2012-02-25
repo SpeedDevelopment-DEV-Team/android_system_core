@@ -33,9 +33,6 @@ loglevel 3
 # but someday that may change.
     symlink /system/vendor /vendor
 
-# create mountpoints
-    mkdir /mnt 0775 root system
-
 # Create cgroup mount point for cpu accounting
     mkdir /acct
     mount cgroup none /acct cpuacct
@@ -73,7 +70,7 @@ loglevel 3
     write /proc/sys/kernel/panic_on_oops 1
     write /proc/sys/kernel/shmmax 268435456
     write /proc/sys/kernel/threads-max 5000
-    write /proc/sys/kernel/sched_features 24192
+    write /proc/sys/kernel/sched_features 24190
     write /proc/sys/kernel/sched_compat_yield 1
     write /proc/sys/kernel/randomize_va_space 2
     write /proc/sys/kernel/sem 500 512000 64 2048
@@ -232,14 +229,14 @@ on boot
     # Note that the driver only supports 6 slots, so we have combined some of
     # the classes into the same memory level; the associated processes of higher
     # classes will still be killed first.
-    write /sys/module/lowmemorykiller/parameters/minfree 2560,3840,6400,12800,12800,25600
+    write /sys/module/lowmemorykiller/parameters/minfree 8192,10134,20254,20536,20648,25750
 
-    # Virtual background tweaks
+    # Virtual kernel tweaks
     write /proc/sys/vm/swappiness 0
     write /proc/sys/vm/dirty_ratio 90
     write /proc/sys/vm/min_free_kbytes 8192
     write /proc/sys/vm/vfs_cache_pressure 25
-    write /proc/sys/vm/dirty_background_ratio 65
+    write /proc/sys/vm/dirty_background_ratio 70
     write /proc/sys/vm/dirty_expire_centisecs 3000
     write /proc/sys/vm/dirty_writeback_centisecs 6000
 
