@@ -46,7 +46,7 @@ typedef enum {
     AUDIO_STREAM_ENFORCED_AUDIBLE = 7, /* Sounds that cannot be muted by user and must be routed to speaker */
     AUDIO_STREAM_DTMF             = 8,
     AUDIO_STREAM_TTS              = 9,
-#ifdef QCOM_AUDIO_EXT
+#ifdef QCOM_HARDWARE
     AUDIO_STREAM_FM               = 10,
 #endif
     AUDIO_STREAM_CNT,
@@ -65,7 +65,7 @@ typedef enum {
     AUDIO_SOURCE_CAMCORDER           = 5,
     AUDIO_SOURCE_VOICE_RECOGNITION   = 6,
     AUDIO_SOURCE_VOICE_COMMUNICATION = 7,
-#ifdef QCOM_AUDIO_EXT
+#ifdef QCOM_HARDWARE
     AUDIO_SOURCE_FM_RX               = 8,
     AUDIO_SOURCE_FM_RX_A2DP          = 9,
 #endif
@@ -143,7 +143,7 @@ typedef enum {
     AUDIO_FORMAT_HE_AAC_V1           = 0x05000000UL,
     AUDIO_FORMAT_HE_AAC_V2           = 0x06000000UL,
     AUDIO_FORMAT_VORBIS              = 0x07000000UL,
-#ifdef QCOM_AUDIO_EXT
+#ifdef QCOM_HARDWARE
     AUDIO_FORMAT_QCELP               = 0x08000000UL,
     AUDIO_FORMAT_EVRC                = 0x09000000UL,
 #endif
@@ -297,7 +297,7 @@ typedef enum {
     AUDIO_DEVICE_OUT_AUX_DIGITAL               = 0x400,
     AUDIO_DEVICE_OUT_ANLG_DOCK_HEADSET         = 0x800,
     AUDIO_DEVICE_OUT_DGTL_DOCK_HEADSET         = 0x1000,
-#ifdef QCOM_AUDIO_EXT
+#ifdef QCOM_HARDWARE
     AUDIO_DEVICE_OUT_FM                        = 0x2000,
     AUDIO_DEVICE_OUT_ANC_HEADSET               = 0x4000,
     AUDIO_DEVICE_OUT_ANC_HEADPHONE             = 0x8000,
@@ -320,7 +320,7 @@ typedef enum {
                                  AUDIO_DEVICE_OUT_AUX_DIGITAL |
                                  AUDIO_DEVICE_OUT_ANLG_DOCK_HEADSET |
                                  AUDIO_DEVICE_OUT_DGTL_DOCK_HEADSET |
-#ifdef QCOM_AUDIO_EXT
+#ifdef QCOM_HARDWARE
                                  AUDIO_DEVICE_OUT_FM |
                                  AUDIO_DEVICE_OUT_ANC_HEADSET |
                                  AUDIO_DEVICE_OUT_ANC_HEADPHONE |
@@ -336,7 +336,7 @@ typedef enum {
                                  AUDIO_DEVICE_OUT_BLUETOOTH_SCO_CARKIT),
 
     /* input devices */
-#ifdef QCOM_AUDIO_EXT
+#ifdef QCOM_HARDWARE
     AUDIO_DEVICE_IN_COMMUNICATION         = 0x100000,
     AUDIO_DEVICE_IN_AMBIENT               = 0x200000,
     AUDIO_DEVICE_IN_BUILTIN_MIC           = 0x400000,
@@ -368,7 +368,7 @@ typedef enum {
                                AUDIO_DEVICE_IN_AUX_DIGITAL |
                                AUDIO_DEVICE_IN_VOICE_CALL |
                                AUDIO_DEVICE_IN_BACK_MIC |
-#ifdef QCOM_AUDIO_EXT
+#ifdef QCOM_HARDWARE
                                AUDIO_DEVICE_IN_ANC_HEADSET |
                                AUDIO_DEVICE_IN_FM_RX |
                                AUDIO_DEVICE_IN_FM_RX_A2DP |
@@ -441,7 +441,7 @@ static inline bool audio_is_valid_format(uint32_t format)
     case AUDIO_FORMAT_HE_AAC_V1:
     case AUDIO_FORMAT_HE_AAC_V2:
     case AUDIO_FORMAT_VORBIS:
-#ifdef QCOM_AUDIO_EXT
+#ifdef QCOM_HARDWARE
     case AUDIO_FORMAT_QCELP:
     case AUDIO_FORMAT_EVRC:
 #endif
