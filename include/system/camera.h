@@ -79,14 +79,18 @@ enum {
     CAMERA_MSG_POSTVIEW_FRAME = 0x0040,   // dataCallback
     CAMERA_MSG_RAW_IMAGE = 0x0080,        // dataCallback
     CAMERA_MSG_COMPRESSED_IMAGE = 0x0100, // dataCallback
+#ifdef QCOM_HARDWARE
+    CAMERA_MSG_STATS_DATA = 0x200,
+    CAMERA_MSG_META_DATA = 0x400,
+    CAMERA_MSG_LOCK_MUTEX = 0x800,		//Get Mutex from HAL
+    CAMERA_MSG_UNLOCK_MUTEX = 0x1000,		//Release Mutex from HAL
+#endif
     CAMERA_MSG_RAW_IMAGE_NOTIFY = 0x0200, // dataCallback
     // Preview frame metadata. This can be combined with
     // CAMERA_MSG_PREVIEW_FRAME in dataCallback. For example, the apps can
     // request FRAME and METADATA. Or the apps can request only FRAME or only
     // METADATA.
     CAMERA_MSG_PREVIEW_METADATA = 0x0400, // dataCallback
-    CAMERA_MSG_STATS_DATA       = 0x800,
-
     CAMERA_MSG_ALL_MSGS = 0xFFFF
 };
 
@@ -145,10 +149,14 @@ enum {
      */
     CAMERA_CMD_STOP_FACE_DETECTION = 7,
 
-    CAMERA_CMD_HISTOGRAM_ON     = 8,
-    CAMERA_CMD_HISTOGRAM_OFF     = 9,
-    CAMERA_CMD_HISTOGRAM_SEND_DATA  = 10,
-
+#ifdef QCOM_HARDWARE
+    CAMERA_CMD_HISTOGRAM_ON = 8,
+    CAMERA_CMD_HISTOGRAM_OFF = 9,
+    CAMERA_CMD_HISTOGRAM_SEND_DATA = 10,
+    CAMERA_CMD_FACE_DETECTION_ON = 7,
+    CAMERA_CMD_FACE_DETECTION_OFF = 8,
+    CAMERA_CMD_SEND_META_DATA = 9,
+#endif
 };
 
 /** camera fatal errors */
