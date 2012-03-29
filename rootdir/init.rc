@@ -230,14 +230,14 @@ on boot
     # Note that the driver only supports 6 slots, so we have combined some of
     # the classes into the same memory level; the associated processes of higher
     # classes will still be killed first.
-    write /sys/module/lowmemorykiller/parameters/minfree 8192,10134,20254,20256,20258,25750
+    write /sys/module/lowmemorykiller/parameters/minfree 8099,10132,20000,20000,20000,25000
 
     # Virtual kernel tweaks
-    write /proc/sys/vm/swappiness 0
+    write /proc/sys/vm/swappiness 30
     write /proc/sys/vm/dirty_ratio 90
     write /proc/sys/vm/min_free_kbytes 8192
     write /proc/sys/vm/vfs_cache_pressure 25
-    write /proc/sys/vm/dirty_background_ratio 70
+    write /proc/sys/vm/dirty_background_ratio 65
     write /proc/sys/vm/dirty_expire_centisecs 3000
     write /proc/sys/vm/dirty_writeback_centisecs 6000
 
@@ -282,11 +282,17 @@ on boot
 
 # allow system to modify cpufreq control files
     chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown root system /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
     chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
     chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown root system /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
     chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0664 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
     chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chown root system /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
     chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
     chown root system /sys/block/mmcblk0/queue/scheduler
     chmod 0664 /sys/block/mmcblk0/queue/scheduler
 
@@ -384,7 +390,6 @@ on property:sys.usb.config=accessory,adb
     setprop sys.usb.state $sys.usb.config
 
 # Used to set USB configuration at boot and to switch the configuration
-# when changing the default configuration
 on property:persist.sys.usb.config=*
     setprop sys.usb.config $persist.sys.usb.config
 
