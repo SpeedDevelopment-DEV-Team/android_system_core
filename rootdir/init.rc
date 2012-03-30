@@ -230,7 +230,8 @@ on boot
     # Note that the driver only supports 6 slots, so we have combined some of
     # the classes into the same memory level; the associated processes of higher
     # classes will still be killed first.
-    write /sys/module/lowmemorykiller/parameters/minfree 8099,10132,20000,20000,20000,25000
+    write /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,8,16
+    write /sys/module/lowmemorykiller/parameters/minfree 8192,10134,20000,20000,50000,100000
 
     # Virtual kernel tweaks
     write /proc/sys/vm/swappiness 30
