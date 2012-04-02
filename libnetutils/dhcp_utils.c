@@ -291,12 +291,12 @@ char *dhcp_get_errmsg() {
  * "wimax_renew" service shoud be included in init.rc.
  */
 int dhcp_do_request_renew(const char *interface,
-                    char *ipaddr,
-                    char *gateway,
+                    in_addr_t *ipaddr,
+                    in_addr_t *gateway,
                     uint32_t *prefixLength,
-                    char *dns1,
-                    char *dns2,
-                    char *server,
+                    in_addr_t *dns1,
+                    in_addr_t *dns2,
+                    in_addr_t *server,
                     uint32_t  *lease)
 {
     char result_prop_name[PROPERTY_KEY_MAX];
