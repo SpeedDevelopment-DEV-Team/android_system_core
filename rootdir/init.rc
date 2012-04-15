@@ -61,25 +61,14 @@ loglevel 3
     mkdir /mnt/obb 0700 root system
     mount tmpfs tmpfs /mnt/obb mode=0755,gid=1000
 
-    # Sysctl kernel tweaks
-    write /proc/cpu/alignment 4
-    write /proc/sys/kernel/msgmni 2048
-    write /proc/sys/kernel/shmmni 4096
-    write /proc/sys/kernel/msgmax 64000
-    write /proc/sys/kernel/shmall 2097152
     write /proc/sys/kernel/panic_on_oops 1
-    write /proc/sys/kernel/shmmax 268435456
-    write /proc/sys/kernel/threads-max 5000
-    write /proc/sys/kernel/sched_features 24190
-    write /proc/sys/kernel/sched_compat_yield 1
-    write /proc/sys/kernel/randomize_va_space 2
-    write /proc/sys/kernel/sem 500 512000 64 2048
     write /proc/sys/kernel/hung_task_timeout_secs 0
+    write /proc/cpu/alignment 4
+    write /proc/sys/kernel/sched_latency_ns 10000000
+    write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
+    write /proc/sys/kernel/sched_compat_yield 1
     write /proc/sys/kernel/sched_child_runs_first 0
-    write /proc/sys/kernel/sched_latency_ns 18000000
-    write /proc/sys/kernel/sched_shares_ratelimit 256000
-    write /proc/sys/kernel/sched_min_granularity_ns 1500000
-    write /proc/sys/kernel/sched_wakeup_granularity_ns 3000000
+    write /proc/sys/kernel/randomize_va_space 2
 
 # Create cgroup mount points for process groups
     mkdir /dev/cpuctl
@@ -102,7 +91,8 @@ loglevel 3
 
 # Allow everybody to read the xt_qtaguid resource tracking misc dev.
 # This is needed by any process that uses socket tagging.
-    chmod 0644 /dev/xt_qtaguid
+    chown system system /dev/xt_qtaguid
+    chmod 0775 /dev/xt_qtaguid
 
 on fs
 # mount mtd partitions
@@ -230,15 +220,15 @@ on boot
     # Note that the driver only supports 6 slots, so we have combined some of
     # the classes into the same memory level; the associated processes of higher
     # classes will still be killed first.
-    write /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,8,16
-    write /sys/module/lowmemorykiller/parameters/minfree 8192,10134,20000,20000,50000,100000
+    write /sys/module/lowmemorykiller/parameters/adj 0,1,2,7,14,16
+    write /sys/module/lowmemorykiller/parameters/minfree 8192,10134,20000,22000,24000,26000
 
     # Virtual kernel tweaks
-    write /proc/sys/vm/swappiness 30
+    write /proc/sys/vm/swappiness 0
     write /proc/sys/vm/dirty_ratio 90
     write /proc/sys/vm/min_free_kbytes 8192
-    write /proc/sys/vm/vfs_cache_pressure 25
-    write /proc/sys/vm/dirty_background_ratio 65
+    write /proc/sys/vm/vfs_cache_pressure 30
+    write /proc/sys/vm/dirty_background_ratio 70
     write /proc/sys/vm/dirty_expire_centisecs 3000
     write /proc/sys/vm/dirty_writeback_centisecs 6000
 
@@ -483,7 +473,7 @@ service drm /system/bin/drmserver
 service media /system/bin/mediaserver
     class main
     user media
-    group system audio camera inet net_bt net_bt_admin net_bw_acct drmrpc
+    group system audio camera graphics inet net_bt net_bt_admin net_bw_acct drmrpc
     ioprio rt 4
 
 service bootanim /system/bin/bootanimation
@@ -507,6 +497,34 @@ service bluetoothd /system/bin/bluetoothd -n
     # let bluetoothd drop uid to bluetooth with the right linux capabilities
     group bluetooth net_bt_admin misc
     disabled
+
+service hfag /system/bin/sdptool add --channel=10 HFAG
+    class main
+    user bluetooth
+    group bluetooth net_bt_admin
+    disabled
+    oneshot
+
+service hsag /system/bin/sdptool add --channel=11 HSAG
+    class main
+    user bluetooth
+    group bluetooth net_bt_admin
+    disabled
+    oneshot
+
+service opush /system/bin/sdptool add --channel=12 OPUSH
+    class main
+    user bluetooth
+    group bluetooth net_bt_admin
+    disabled
+    oneshot
+
+service pbap /system/bin/sdptool add --channel=19 PBAP
+    class main
+    user bluetooth
+    group bluetooth net_bt_admin
+    disabled
+    oneshot
 
 service installd /system/bin/installd
     class main
