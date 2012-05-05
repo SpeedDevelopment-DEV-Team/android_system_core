@@ -91,8 +91,8 @@ loglevel 3
 
 # Allow everybody to read the xt_qtaguid resource tracking misc dev.
 # This is needed by any process that uses socket tagging.
-    chown system system /dev/xt_qtaguid
-    chmod 0775 /dev/xt_qtaguid
+    chown root system /dev/xt_qtaguid
+    chmod 0644 /dev/xt_qtaguid
 
 on fs
 # mount mtd partitions
@@ -216,19 +216,12 @@ on boot
     chown root system /sys/module/lowmemorykiller/parameters/minfree
     chmod 0664 /sys/module/lowmemorykiller/parameters/minfree
 
-    # Write value must be consistent with the above properties.
-    # Note that the driver only supports 6 slots, so we have combined some of
-    # the classes into the same memory level; the associated processes of higher
-    # classes will still be killed first.
-    write /sys/module/lowmemorykiller/parameters/adj 0,1,2,7,14,16
-    write /sys/module/lowmemorykiller/parameters/minfree 8192,10134,20000,22000,24000,26000
-
     # Virtual kernel tweaks
-    write /proc/sys/vm/swappiness 0
+    write /proc/sys/vm/swappiness 30
     write /proc/sys/vm/dirty_ratio 90
     write /proc/sys/vm/min_free_kbytes 8192
-    write /proc/sys/vm/vfs_cache_pressure 30
-    write /proc/sys/vm/dirty_background_ratio 70
+    write /proc/sys/vm/vfs_cache_pressure 25
+    write /proc/sys/vm/dirty_background_ratio 65
     write /proc/sys/vm/dirty_expire_centisecs 3000
     write /proc/sys/vm/dirty_writeback_centisecs 6000
 
